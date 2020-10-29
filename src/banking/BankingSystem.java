@@ -2,6 +2,22 @@ package banking;
 
 import java.util.*;
 
+/**
+ * Course: JetBrains Academy, Java Developer Track
+ * Project: Simple Banking System
+ * Purpose: A console-based program to simulate operations in a bank.
+ *
+ * BankingSystem is the main class representing the bank.
+ * It holds references to:
+ * <ul>
+ *     <li>card numbers</li>
+ *     <li>accounts</li>
+ *     <li>database manager</li>
+ * </ul>
+ *
+ * @author Mirek Drozd
+ * @version 1.1
+ */
 public class BankingSystem {
     Map<String, Integer> cardNumbers = new HashMap<>();
     Set<UserAccount> accounts = new HashSet<>();
@@ -14,6 +30,9 @@ public class BankingSystem {
         dbManager.setup(this.params);
     }
 
+    /**
+     * Displays main program menu and reads user choice.
+     */
     public void mainMenu() {
         System.out.println("\n1. Create an account");
         System.out.println("2. Log into account");
@@ -40,6 +59,11 @@ public class BankingSystem {
         }
     }
 
+    /**
+     * Reads what menu option was selected by user.
+     *
+     * @return Number typed in by user.
+     */
     public int readUsersChoice() {
         int choice = -1;
         try {
@@ -50,7 +74,13 @@ public class BankingSystem {
         return choice;
     }
 
-
+    /**
+     * Creates new user account.
+     * To do this, it generates new card number and PIN.
+     * By default, balance on a newly created account is 0.
+     * When created, the account and its card number are registered
+     * in their respective collections.
+     */
     public void createAccount() {
         String cardNumber = generateCardNumber();
         int PIN = generatePIN();
@@ -62,6 +92,12 @@ public class BankingSystem {
         mainMenu();
     }
 
+    /**
+     * Computes checksum for bank account number.
+     *
+     * @param accountNumber Number of the bank account.
+     * @return Computed checksum.
+     */
     public int findChecksum(String accountNumber) {
         StringBuilder sb = new StringBuilder();
         //Luhn algorithm
@@ -89,6 +125,13 @@ public class BankingSystem {
         return checksum == 10 ? 0 : checksum;
     }
 
+    /**
+     * Generates new card number based on Issuer Identification Number (IIN).
+     * By convention, IIN always starts with 400000 in this program.
+     * The remaining 9 numbers are randomly generated using Java's Random.
+     *
+     * @return Generated card number as String.
+     */
     public String generateCardNumber() {
         int[] nums = new Random().ints(9, 0,9).toArray();
         String IIN = "400000" + Arrays.toString(nums).replaceAll("\\[|\\]|,|\\s", "");
@@ -98,6 +141,12 @@ public class BankingSystem {
         return IIN;
     }
 
+    /**
+     * Generates 4-digit PIN for the card using Java's Random.
+     * Possible PIN range is from 0000 to 9999.
+     *
+     * @return Generated PIN as int.
+     */
     public int generatePIN() {
         int[] nums =  new Random().ints(4, 1, 9).toArray();
         int pin = 0;
@@ -108,6 +157,11 @@ public class BankingSystem {
         return pin;
     }
 
+    /**
+     * Simulates logging in procedure.
+     * User has to enter their card number and PIN.
+     * These are then verified against database.
+     */
     public void logIn() {
         try (Scanner scanner = new Scanner(System.in)){
             System.out.println("Enter your card number:");
@@ -120,6 +174,11 @@ public class BankingSystem {
         }
     }
 
+    /**
+     * Checks user authentication data (card number & PIN) against database.
+     *
+     * @param user The user to be authenticated.
+     */
     public void checkCredentials(UserAccount user) {
         if (accounts.contains(user)) {
             System.out.println("\nYou have successfully logged in!");
@@ -130,7 +189,11 @@ public class BankingSystem {
         }
     }
 
-
+    /**
+     * Displays program menu after user logs in.
+     *
+     * @param user The logged-in user.
+     */
     public void userMenu(UserAccount user) {
         System.out.println("\n1. Balance");
         System.out.println("2. Add income");
@@ -169,6 +232,11 @@ public class BankingSystem {
         }
     }
 
+    /**
+     * Adds the amount of money specified by user to user's account.
+     *
+     * @param user The logged-in user.
+     */
     public void addIncome(UserAccount user) {
         System.out.println("Enter income:");
         int income = scanner.nextInt();
@@ -182,6 +250,13 @@ public class BankingSystem {
         userMenu(user);
     }
 
+    /**
+     * Transfers money from users account to some different account.
+     * User cannot transfer more money than is available on their account.
+     * Target account has to have a valid number & has to exist in database.
+     *
+     * @param user The logged-in user.
+     */
     public void doTransfer(UserAccount user) {
         System.out.println("Enter card number:");
         try(Scanner scanner = new Scanner(System.in)) {
@@ -209,10 +284,21 @@ public class BankingSystem {
         }
     }
 
+    /**
+     * Checks whether the account exists in the database.
+     *
+     * @param accountNumber The number of the account.
+     * @return true if account exists, or false if account doesn't exist.
+     */
     public boolean accountExists(String accountNumber) {
         return cardNumbers.containsKey((String) accountNumber);
     }
 
+    /**
+     * Closes the account by removing it from database.
+     *
+     * @param user The user account to be closed.
+     */
     public void closeAccount(UserAccount user) {
         accounts.remove(user);
         int id = dbManager.selectIDByCard(user.getCardNumber());
@@ -221,12 +307,17 @@ public class BankingSystem {
         userMenu(user);
     }
 
+    /**
+     * Prints message to confirm logging out and displays main menu.
+     */
     public void logOut() {
         System.out.println("You have successfully logged out!");
         mainMenu();
     }
 
-
+    /**
+     * Prints message to confirm program shutdown and exits the program.
+     */
     public void exit() {
         System.out.println("Bye!");
         System.exit(0);

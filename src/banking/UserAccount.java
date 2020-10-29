@@ -2,6 +2,18 @@ package banking;
 
 import java.util.Objects;
 
+/**
+ * Course: JetBrains Academy, Java Developer Track
+ * Project: Simple Banking System
+ * Purpose: A console-based program to simulate operations in a bank.
+ *
+ * Class represents bank account.
+ * It stores information about card number, PIN, and balance.
+ * Has standard getters and setters, plus overriden hashCode & equals methods.
+ *
+ * @author Mirek Drozd
+ * @version 1.1
+ */
 public class UserAccount {
     private String cardNumber;
     private int PIN;
